@@ -46,6 +46,12 @@ export async function loginAction(
   return login(formData);
 }
 
+export async function logout() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
 export async function uploadPhoto(formData: FormData): Promise<ActionState> {
   const supabase = await createClient();
   const {
@@ -109,10 +115,48 @@ export async function uploadPhoto(formData: FormData): Promise<ActionState> {
     return { message: insertError.message };
   }
 
+  revalidatePath("/admin");
   revalidatePath("/");
   revalidatePath("/portfolio/[category]", "page");
 
   return { message: "Foto subida correctamente." };
+}
+
+export async function deletePhoto(id: string, imageUrl: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No autorizado");
+  }
+
+  const fileName = imageUrl.split("/").pop();
+
+  if (!fileName) {
+    throw new Error("No se pudo identificar el archivo de la imagen.");
+  }
+
+  const { error: storageError } = await supabase.storage
+    .from("portfolio-images")
+    .remove([fileName]);
+
+  if (storageError) {
+    throw new Error(storageError.message);
+  }
+
+  const { error: deleteError } = await supabase
+    .from("photos")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/");
 }
 
 export async function uploadPhotoAction(
@@ -127,4 +171,8 @@ export async function uploadPhotoAction(
         error instanceof Error ? error.message : "Error inesperado al subir la foto.",
     };
   }
+}
+
+export async function uploadPhotoFromForm(formData: FormData) {
+  await uploadPhoto(formData);
 }
