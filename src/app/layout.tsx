@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Estudio Fotográfico",
@@ -21,6 +22,7 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </div>
+        <Toaster theme="dark" position="bottom-right" richColors />
       </body>
     </html>
   );
