@@ -47,6 +47,15 @@ export async function loginAction(
 }
 
 export async function uploadPhoto(formData: FormData): Promise<ActionState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No autorizado");
+  }
+
   const title = getFormString(formData.get("title"));
   const description = getFormString(formData.get("description"));
   const categoryRaw = getFormString(formData.get("category"));
@@ -70,8 +79,6 @@ export async function uploadPhoto(formData: FormData): Promise<ActionState> {
   const extension = extensionFromName.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const uniqueFileName = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
   const filePath = `uploads/${uniqueFileName}`;
-
-  const supabase = await createClient();
 
   const { error: uploadError } = await supabase.storage
     .from("portfolio-images")
@@ -99,7 +106,6 @@ export async function uploadPhoto(formData: FormData): Promise<ActionState> {
   });
 
   if (insertError) {
-    await supabase.storage.from("portfolio-images").remove([filePath]);
     return { message: insertError.message };
   }
 
@@ -113,5 +119,12 @@ export async function uploadPhotoAction(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  return uploadPhoto(formData);
+  try {
+    return await uploadPhoto(formData);
+  } catch (error) {
+    return {
+      message:
+        error instanceof Error ? error.message : "Error inesperado al subir la foto.",
+    };
+  }
 }

@@ -15,13 +15,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <header className="border-b border-white/10 bg-neutral-900/60 backdrop-blur">
-        <div className="mx-auto w-full max-w-6xl px-6 py-5 text-lg font-semibold tracking-wide text-blue-300">
-          Panel de Control - PhotoPartner
-        </div>
+      <header className="bg-blue-900 p-4 text-white">
+        <h1 className="text-lg font-semibold">Panel de Control - PhotoPartner</h1>
       </header>
 
-      <div className="mx-auto w-full max-w-6xl px-6 py-10">{children}</div>
+      <div className="mx-auto w-full max-w-4xl py-8">{children}</div>
     </div>
   );
 }

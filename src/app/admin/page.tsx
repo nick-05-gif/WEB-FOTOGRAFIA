@@ -14,8 +14,11 @@ export default function AdminPage() {
     initialState
   );
 
+  const inputClasses =
+    "bg-neutral-800 text-white w-full p-2 rounded border border-neutral-700";
+
   return (
-    <main className="space-y-8">
+    <main className="space-y-8 px-4">
       <section className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">Subir nueva foto</h1>
         <p className="text-sm text-neutral-400">
@@ -26,7 +29,7 @@ export default function AdminPage() {
       <form
         action={formAction}
         encType="multipart/form-data"
-        className="space-y-6 rounded-2xl border border-white/10 bg-neutral-900/70 p-6"
+        className="space-y-6 rounded-lg bg-neutral-900 p-6 shadow-lg"
       >
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="space-y-2 md:col-span-2">
@@ -38,7 +41,7 @@ export default function AdminPage() {
               name="title"
               type="text"
               required
-              className="w-full rounded-lg border border-white/15 bg-neutral-950 px-4 py-2.5 outline-none transition focus:border-blue-500"
+              className={inputClasses}
             />
           </div>
 
@@ -50,7 +53,7 @@ export default function AdminPage() {
               id="description"
               name="description"
               rows={4}
-              className="w-full rounded-lg border border-white/15 bg-neutral-950 px-4 py-2.5 outline-none transition focus:border-blue-500"
+              className={inputClasses}
             />
           </div>
 
@@ -63,7 +66,7 @@ export default function AdminPage() {
               name="category"
               required
               defaultValue=""
-              className="w-full rounded-lg border border-white/15 bg-neutral-950 px-4 py-2.5 outline-none transition focus:border-blue-500"
+              className={inputClasses}
             >
               <option value="" disabled>
                 Selecciona una categoria
@@ -81,7 +84,7 @@ export default function AdminPage() {
                 id="is_featured"
                 name="is_featured"
                 type="checkbox"
-                className="h-4 w-4 rounded border-white/20 bg-neutral-950 text-blue-600"
+                className="h-4 w-4 rounded border border-neutral-700 bg-neutral-800 text-blue-600"
               />
               Destacada
             </label>
@@ -97,7 +100,7 @@ export default function AdminPage() {
               type="file"
               accept="image/*"
               required
-              className="w-full rounded-lg border border-white/15 bg-neutral-950 px-4 py-2.5 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
+              className="bg-neutral-800 text-white w-full p-2 rounded border border-neutral-700 file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
             />
           </div>
         </div>
@@ -109,7 +112,7 @@ export default function AdminPage() {
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+          className="rounded bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isPending ? "Subiendo..." : "Subir Foto"}
         </button>
