@@ -21,7 +21,10 @@ export function HeroSection({ imageUrl }: HeroSectionProps) {
         />
       )}
 
-      <div aria-hidden className="absolute inset-0 bg-neutral-950/55" />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-black/60 to-neutral-950"
+      />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-20">
         <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-neutral-100 sm:text-6xl">
@@ -30,7 +33,7 @@ export function HeroSection({ imageUrl }: HeroSectionProps) {
 
         <a
           href="#contacto"
-          className="mt-10 inline-flex items-center rounded-md bg-blue-600 px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-500"
+          className="mt-10 inline-flex items-center rounded-md bg-blue-600 px-6 py-3 font-medium text-white transition-all hover:bg-blue-500"
         >
           Pedir presupuesto a medida
         </a>

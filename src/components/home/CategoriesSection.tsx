@@ -13,7 +13,7 @@ export function CategoriesSection() {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {categories.map((category) => (
           <Link key={category.href} href={category.href} className="group">
-            <article className="flex h-64 items-center justify-center rounded-xl border border-white/10 bg-neutral-900 text-lg font-medium text-neutral-200 transition-colors group-hover:border-blue-600/60 group-hover:text-blue-300">
+            <article className="flex h-64 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-center text-lg font-medium text-neutral-200 transition-colors group-hover:bg-neutral-800 group-hover:text-blue-300">
               {category.name}
             </article>
           </Link>
