@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Photo } from "@/types/database.types";
+import type { NewsCategory, Photo } from "@/types/database.types";
 
 export interface ActionState {
   message: string | null;
@@ -18,6 +18,12 @@ function normalizeCategory(value: string): Photo["category"] | null {
   if (value === "Viajes") return "Viajes";
   if (value === "Retratos") return "Retratos";
   if (value === "Nocturnas") return "Nocturnas";
+  return null;
+}
+
+function normalizeNewsCategory(value: string): NewsCategory | null {
+  if (value === "aragon") return "aragon";
+  if (value === "mundo") return "mundo";
   return null;
 }
 
@@ -192,10 +198,11 @@ export async function createNewsPost(formData: FormData): Promise<ActionState> {
   const title = getFormString(formData.get("news_title"));
   const publishDate = getFormString(formData.get("news_date"));
   const coverImageUrl = getFormString(formData.get("news_cover_image_url"));
+  const category = normalizeNewsCategory(getFormString(formData.get("news_category")));
   const excerpt = getFormString(formData.get("news_excerpt"));
   const content = getFormString(formData.get("news_content"));
 
-  if (!title || !publishDate || !coverImageUrl || !excerpt || !content) {
+  if (!title || !publishDate || !coverImageUrl || !excerpt || !content || !category) {
     return { message: "Completa todos los campos de la noticia." };
   }
 
@@ -230,6 +237,7 @@ export async function createNewsPost(formData: FormData): Promise<ActionState> {
   const { error: insertError } = await supabase.from("news_posts").insert({
     title,
     slug,
+    category,
     publish_date: publishDate,
     cover_image_url: coverImageUrl,
     excerpt,

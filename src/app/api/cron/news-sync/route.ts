@@ -2,11 +2,13 @@ import { XMLParser } from "fast-xml-parser";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import {
+  ARAGON_FEED_URL,
   DEFAULT_NEWS_COVER_IMAGE,
   NEWS_SYNC_LIMIT,
   PETAPIXEL_FEED_URL,
 } from "@/lib/news/constants";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { NewsCategory } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,12 +22,32 @@ interface ExistingNewsPostRow {
 interface ParsedRssItem {
   title: string;
   slug: string;
+  category: NewsCategory;
   publishDate: string;
   coverImageUrl: string;
   excerpt: string;
   content: string;
   sourceUrl: string;
 }
+
+interface FeedSource {
+  name: string;
+  url: string;
+  category: NewsCategory;
+}
+
+const NEWS_FEEDS: FeedSource[] = [
+  {
+    name: "PetaPixel",
+    url: PETAPIXEL_FEED_URL,
+    category: "mundo",
+  },
+  {
+    name: "Aragon",
+    url: ARAGON_FEED_URL,
+    category: "aragon",
+  },
+];
 
 function toArray<T>(value: T | T[] | undefined): T[] {
   if (!value) {
@@ -100,7 +122,7 @@ function isAuthorizedCronCall(request: NextRequest) {
   return authHeader === `Bearer ${configuredSecret}`;
 }
 
-function parseFeedItems(xmlContent: string): ParsedRssItem[] {
+function parseFeedItems(xmlContent: string, category: NewsCategory): ParsedRssItem[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "",
@@ -147,6 +169,7 @@ function parseFeedItems(xmlContent: string): ParsedRssItem[] {
       return {
         title,
         slug,
+        category,
         publishDate,
         coverImageUrl,
         excerpt,
@@ -163,28 +186,42 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const feedResponse = await fetch(PETAPIXEL_FEED_URL, {
-      cache: "no-store",
-      headers: {
-        "User-Agent": "web-tio-news-bot/1.0",
-      },
-    });
+    const parsedItems: ParsedRssItem[] = [];
+    const feedWarnings: string[] = [];
 
-    if (!feedResponse.ok) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: `No se pudo leer el feed RSS (${feedResponse.status}).`,
-        },
-        { status: 502 }
-      );
+    for (const feed of NEWS_FEEDS) {
+      try {
+        const feedResponse = await fetch(feed.url, {
+          cache: "no-store",
+          headers: {
+            "User-Agent": "web-tio-news-bot/1.0",
+          },
+        });
+
+        if (!feedResponse.ok) {
+          feedWarnings.push(
+            `${feed.name}: no se pudo leer RSS (${feedResponse.status})`
+          );
+          continue;
+        }
+
+        const xmlContent = await feedResponse.text();
+        parsedItems.push(...parseFeedItems(xmlContent, feed.category));
+      } catch (error) {
+        feedWarnings.push(
+          `${feed.name}: ${error instanceof Error ? error.message : "error inesperado"}`
+        );
+      }
     }
 
-    const xmlContent = await feedResponse.text();
-    const parsedItems = parseFeedItems(xmlContent);
-
     if (parsedItems.length === 0) {
-      return NextResponse.json({ ok: true, processed: 0, inserted: 0, updated: 0 });
+      return NextResponse.json({
+        ok: true,
+        processed: 0,
+        inserted: 0,
+        updated: 0,
+        warnings: feedWarnings,
+      });
     }
 
     const supabase = createAdminClient();
@@ -236,6 +273,7 @@ export async function GET(request: NextRequest) {
         ...(existingMatch ? { id: existingMatch.id, slug: existingMatch.slug } : {}),
         title: item.title,
         slug: existingMatch?.slug ?? item.slug,
+        category: item.category,
         publish_date: item.publishDate,
         cover_image_url: item.coverImageUrl || DEFAULT_NEWS_COVER_IMAGE,
         excerpt: item.excerpt,
@@ -266,6 +304,7 @@ export async function GET(request: NextRequest) {
       processed: parsedItems.length,
       inserted,
       updated,
+      warnings: feedWarnings,
     });
   } catch (error) {
     return NextResponse.json(

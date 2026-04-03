@@ -29,6 +29,12 @@ function formatNewsDate(value: string) {
   }).format(parsed);
 }
 
+function formatNewsCategoryLabel(category: string) {
+  if (category === "aragon") return "Aragon";
+  if (category === "mundo") return "Mundo";
+  return "Sin categoria";
+}
+
 export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProps) {
   const router = useRouter();
   const photoFormRef = useRef<HTMLFormElement>(null);
@@ -307,6 +313,22 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
               </div>
 
               <div className="space-y-2">
+                <label htmlFor="news_category" className="text-sm text-neutral-300">
+                  Categoria
+                </label>
+                <select
+                  id="news_category"
+                  name="news_category"
+                  defaultValue="mundo"
+                  required
+                  className={inputClasses}
+                >
+                  <option value="aragon">Aragon</option>
+                  <option value="mundo">Mundo</option>
+                </select>
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
                 <label htmlFor="news_cover_image_url" className="text-sm text-neutral-300">
                   URL imagen de portada
                 </label>
@@ -378,6 +400,10 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
 
                     <p className="text-xs uppercase tracking-[0.12em] text-blue-300">
                       {formatNewsDate(post.publish_date)}
+                    </p>
+
+                    <p className="w-fit rounded-full border border-blue-700/70 bg-blue-600/10 px-2 py-1 text-xs uppercase tracking-[0.12em] text-blue-200">
+                      {formatNewsCategoryLabel(post.category)}
                     </p>
 
                     <h3 className="text-lg font-semibold text-neutral-100">{post.title}</h3>

@@ -8,11 +8,14 @@ export interface Photo {
   is_featured: boolean;
 }
 
+export type NewsCategory = "aragon" | "mundo";
+
 export interface NewsPost {
   id: string;
   created_at: string;
   title: string;
   slug: string;
+  category: NewsCategory;
   publish_date: string;
   cover_image_url: string;
   excerpt: string;
