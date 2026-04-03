@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer id="contacto" className="bg-black px-6 py-8 text-neutral-400">
@@ -19,6 +21,15 @@ export function Footer() {
           >
             contacto@photopartner.studio
           </a>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link href="/aviso-legal" className="transition-colors hover:text-blue-400">
+            Aviso Legal
+          </Link>
+          <Link href="/privacidad" className="transition-colors hover:text-blue-400">
+            Política de Privacidad
+          </Link>
         </div>
       </div>
     </footer>
