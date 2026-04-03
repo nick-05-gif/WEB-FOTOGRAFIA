@@ -1,4 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
+import { decode } from "he";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -49,17 +50,23 @@ function slugify(value: string) {
 }
 
 function stripHtml(value: string) {
-  return value
+  const decodedValue = decode(value || "");
+
+  return decodedValue
     .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/li>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "- ")
     .replace(/<\/p>/gi, "\n\n")
     .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r/g, "")
     .replace(/\s+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function cleanInlineText(value: string) {
+  return stripHtml(value).replace(/\s+/g, " ").trim();
 }
 
 function getImageFromHtml(html: string) {
@@ -117,8 +124,8 @@ function parseFeedItems(xmlContent: string): ParsedRssItem[] {
 
   return rawItems
     .map((item) => {
-      const title = typeof item.title === "string" ? item.title.trim() : "";
-      const sourceUrl = typeof item.link === "string" ? item.link.trim() : "";
+      const title = cleanInlineText(typeof item.title === "string" ? item.title : "");
+      const sourceUrl = cleanInlineText(typeof item.link === "string" ? item.link : "");
 
       const contentEncoded =
         typeof item["content:encoded"] === "string" ? item["content:encoded"] : "";
@@ -134,13 +141,13 @@ function parseFeedItems(xmlContent: string): ParsedRssItem[] {
 
       const imageFromHtml = getImageFromHtml(contentEncoded || description);
       const coverImageUrl =
-        String(firstMediaImage ?? "").trim() ||
-        enclosureImage.trim() ||
+        cleanInlineText(String(firstMediaImage ?? "")) ||
+        cleanInlineText(enclosureImage) ||
         imageFromHtml.trim() ||
         DEFAULT_NEWS_COVER_IMAGE;
 
       const content = stripHtml(contentEncoded || description);
-      const excerpt = ensureExcerpt(stripHtml(description || contentEncoded));
+      const excerpt = ensureExcerpt(cleanInlineText(description || contentEncoded));
       const slug = slugify(title);
       const publishDate = normalizePublishDate(
         typeof item.pubDate === "string" ? item.pubDate : ""
