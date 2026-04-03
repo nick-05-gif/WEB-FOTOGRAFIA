@@ -21,6 +21,26 @@ function normalizeCategory(value: string): Photo["category"] | null {
   return null;
 }
 
+function isValidHttpUrl(value: string) {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export async function login(formData: FormData): Promise<ActionState> {
   const email = getFormString(formData.get("email"));
   const password = getFormString(formData.get("password"));
@@ -157,6 +177,100 @@ export async function deletePhoto(id: string, imageUrl: string) {
 
   revalidatePath("/admin");
   revalidatePath("/");
+}
+
+export async function createNewsPost(formData: FormData): Promise<ActionState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No autorizado");
+  }
+
+  const title = getFormString(formData.get("news_title"));
+  const publishDate = getFormString(formData.get("news_date"));
+  const coverImageUrl = getFormString(formData.get("news_cover_image_url"));
+  const excerpt = getFormString(formData.get("news_excerpt"));
+  const content = getFormString(formData.get("news_content"));
+
+  if (!title || !publishDate || !coverImageUrl || !excerpt || !content) {
+    return { message: "Completa todos los campos de la noticia." };
+  }
+
+  if (!isValidHttpUrl(coverImageUrl)) {
+    return { message: "La URL de portada no es valida." };
+  }
+
+  const baseSlug = slugify(title);
+
+  if (!baseSlug) {
+    return { message: "No se pudo generar un slug valido para la noticia." };
+  }
+
+  let slug = baseSlug;
+
+  const { data: existingPost, error: existingPostError } = await supabase
+    .from("news_posts")
+    .select("id")
+    .eq("slug", baseSlug)
+    .maybeSingle();
+
+  if (existingPostError) {
+    return { message: existingPostError.message };
+  }
+
+  if (existingPost) {
+    slug = `${baseSlug}-${Date.now().toString().slice(-6)}`;
+  }
+
+  // En cristiano: cuando le das a "Publicar", esto mete la noticia en
+  // Supabase, tabla news_posts. Aqui queda guardada de verdad.
+  const { error: insertError } = await supabase.from("news_posts").insert({
+    title,
+    slug,
+    publish_date: publishDate,
+    cover_image_url: coverImageUrl,
+    excerpt,
+    content,
+  });
+
+  if (insertError) {
+    return { message: insertError.message };
+  }
+
+  // Y aqui forzamos refresco de cache para que /admin y /noticias
+  // vuelvan a leer DB al instante y salga la noticia sin esperar.
+  revalidatePath("/admin");
+  revalidatePath("/noticias");
+  revalidatePath(`/noticias/${slug}`);
+
+  return { message: "Noticia publicada correctamente." };
+}
+
+export async function deleteNewsPost(id: string, slug: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No autorizado");
+  }
+
+  const { error: deleteError } = await supabase.from("news_posts").delete().eq("id", id);
+
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/noticias");
+
+  if (slug) {
+    revalidatePath(`/noticias/${slug}`);
+  }
 }
 
 export async function uploadPhotoAction(

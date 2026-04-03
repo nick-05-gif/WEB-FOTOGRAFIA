@@ -7,3 +7,15 @@ export interface Photo {
   image_url: string;
   is_featured: boolean;
 }
+
+export interface NewsPost {
+  id: string;
+  created_at: string;
+  title: string;
+  slug: string;
+  publish_date: string;
+  cover_image_url: string;
+  excerpt: string;
+  content: string;
+  source_url: string | null;
+}

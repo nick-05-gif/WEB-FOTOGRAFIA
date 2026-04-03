@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getNewsPostBySlug } from "@/lib/news-data";
+import { DEFAULT_NEWS_COVER_IMAGE } from "@/lib/news/constants";
+import { getNewsPostBySlug } from "@/lib/supabase/queries";
 
 interface NewsDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -8,52 +8,66 @@ interface NewsDetailPageProps {
 
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   const { slug } = await params;
-  const post = getNewsPostBySlug(slug);
+  const post = await getNewsPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
+  const parsedDate = new Date(post.publish_date);
+  const articleDate = Number.isNaN(parsedDate.getTime())
+    ? post.publish_date
+    : new Intl.DateTimeFormat("es-ES", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).format(parsedDate);
+
+  const articleParagraphs = post.content
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
   return (
     <main className="mx-auto w-full max-w-4xl space-y-8 px-6 py-16 sm:py-20">
       <header className="space-y-4">
-        <p className="text-xs uppercase tracking-[0.14em] text-blue-300">{post.date}</p>
+        <p className="text-xs uppercase tracking-[0.14em] text-blue-300">{articleDate}</p>
         <h1 className="text-4xl font-semibold tracking-tight text-neutral-100 sm:text-5xl">
           {post.title}
         </h1>
+        <p className="max-w-3xl text-neutral-300">{post.excerpt}</p>
       </header>
 
-      <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-neutral-800">
-        <Image
-          src={post.coverImage}
+      <div className="aspect-[16/9] overflow-hidden rounded-2xl border border-neutral-800">
+        <img
+          src={post.cover_image_url || DEFAULT_NEWS_COVER_IMAGE}
           alt={post.title}
-          fill
-          sizes="100vw"
-          className="object-cover"
-          priority
+          className="h-full w-full object-cover"
         />
       </div>
 
       <article className="space-y-8 leading-relaxed text-neutral-300">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at consectetur nulla.
-          Duis dignissim, justo ac interdum dictum, eros mauris varius justo, vitae vestibulum
-          augue elit at lacus. Nulla facilisi. Integer luctus consequat lorem, vel viverra neque.
-        </p>
+        {articleParagraphs.length === 0 ? (
+          <p>Esta noticia no tiene contenido cargado todavia.</p>
+        ) : (
+          articleParagraphs.map((paragraph, index) => (
+            <p key={`${post.id}-${index}`}>{paragraph}</p>
+          ))
+        )}
 
-        {post.sections.map((section) => (
-          <section key={section.title} className="space-y-3">
-            <h2 className="text-2xl font-semibold text-neutral-100">{section.title}</h2>
-            <p>{section.content}</p>
-          </section>
-        ))}
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue libero non
-          mauris dapibus, in congue risus luctus. Aliquam erat volutpat. Integer tristique,
-          ligula ut pellentesque posuere, dolor justo bibendum ipsum, non tempor eros nibh sed
-          lectus.
-        </p>
+        {post.source_url ? (
+          <p>
+            Fuente original:{" "}
+            <a
+              href={post.source_url}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-blue-300 hover:text-blue-200"
+            >
+              ver articulo completo
+            </a>
+          </p>
+        ) : null}
       </article>
     </main>
   );
