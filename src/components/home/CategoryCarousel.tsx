@@ -46,7 +46,7 @@ export function CategoryCarousel({
 
   return (
     <Link href={href} className="group block">
-      <article className="relative h-[56vh] min-h-[340px] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900">
+      <article className="relative h-[56vh] min-h-[340px] overflow-hidden border border-white/10 bg-neutral-900/20">
         {images.map((imageUrl, index) => (
           <Image
             key={`${title}-${index}`}
@@ -67,11 +67,11 @@ export function CategoryCarousel({
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
-        <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-          <p className="text-sm uppercase tracking-[0.2em] text-blue-300">Coleccion</p>
+        <div className="absolute inset-x-0 bottom-0 p-8 sm:p-10">
+          <p className="text-sm uppercase tracking-[0.2em] text-neutral-300">Coleccion</p>
           <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">{title}</h2>
           <p className="mt-2 max-w-2xl text-sm text-neutral-200 sm:text-base">{description}</p>
-          <span className="mt-4 inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors group-hover:bg-blue-500">
+          <span className="btn-premium mt-5 border-white/20 bg-neutral-950/80 text-neutral-100 group-hover:bg-neutral-900">
             Explorar categoria
           </span>
         </div>

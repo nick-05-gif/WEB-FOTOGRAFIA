@@ -46,9 +46,8 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
   const [deletingNewsId, setDeletingNewsId] = useState<string | null>(null);
 
   const inputClasses =
-    "bg-neutral-800 text-white w-full p-2 rounded border border-neutral-700";
-  const tabButtonClasses =
-    "rounded-full px-4 py-2 text-sm font-semibold transition-colors";
+    "w-full border border-white/15 bg-neutral-950 px-3 py-2 text-white outline-none transition focus:border-white/45";
+  const tabButtonClasses = "btn-premium min-w-[110px]";
 
   const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -134,14 +133,14 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-wrap gap-2 rounded-lg border border-neutral-800 bg-neutral-900 p-2">
+      <section className="flex flex-wrap gap-3 border border-white/10 bg-neutral-900/30 p-2">
         <button
           type="button"
           onClick={() => setActiveTab("photos")}
           className={`${tabButtonClasses} ${
             activeTab === "photos"
-              ? "bg-blue-600 text-white"
-              : "bg-transparent text-neutral-300 hover:bg-neutral-800"
+              ? "border-white/40 bg-neutral-100 text-neutral-900"
+              : "border-white/15 bg-neutral-900 text-neutral-300"
           }`}
         >
           Fotos
@@ -152,8 +151,8 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
           onClick={() => setActiveTab("news")}
           className={`${tabButtonClasses} ${
             activeTab === "news"
-              ? "bg-blue-600 text-white"
-              : "bg-transparent text-neutral-300 hover:bg-neutral-800"
+              ? "border-white/40 bg-neutral-100 text-neutral-900"
+              : "border-white/15 bg-neutral-900 text-neutral-300"
           }`}
         >
           Noticias
@@ -166,7 +165,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
             ref={photoFormRef}
             onSubmit={handleUpload}
             encType="multipart/form-data"
-            className="space-y-6 rounded-lg bg-neutral-900 p-6 shadow-lg"
+            className="space-y-6 border border-white/10 bg-neutral-900/30 p-8"
           >
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
@@ -226,7 +225,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                   type="file"
                   accept="image/*"
                   required
-                  className="bg-neutral-800 text-white w-full p-2 rounded border border-neutral-700 file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                  className="w-full border border-white/15 bg-neutral-950 px-3 py-2 text-white file:mr-4 file:border-0 file:bg-neutral-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-neutral-900"
                 />
               </div>
             </div>
@@ -234,7 +233,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
             <button
               type="submit"
               disabled={isSubmittingPhoto}
-              className="rounded bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="btn-premium"
             >
               {isSubmittingPhoto ? "Subiendo..." : "Subir foto"}
             </button>
@@ -250,9 +249,9 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                 {photos.map((photo) => (
                   <article
                     key={photo.id}
-                    className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-900 p-3"
+                    className="space-y-3 border border-white/10 bg-neutral-900/20 p-3"
                   >
-                    <div className="relative aspect-square overflow-hidden rounded-md bg-neutral-800">
+                    <div className="relative aspect-square overflow-hidden bg-neutral-800/60">
                       <Image
                         src={photo.image_url}
                         alt={photo.description ?? photo.title}
@@ -268,7 +267,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                       type="button"
                       onClick={() => handleDelete(photo.id, photo.image_url)}
                       disabled={deletingPhotoId === photo.id}
-                      className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="btn-premium btn-premium-danger"
                     >
                       {deletingPhotoId === photo.id ? "Borrando..." : "Borrar"}
                     </button>
@@ -283,7 +282,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
           <form
             ref={newsFormRef}
             onSubmit={handlePublishNews}
-            className="space-y-6 rounded-lg bg-neutral-900 p-6 shadow-lg"
+            className="space-y-6 border border-white/10 bg-neutral-900/30 p-8"
           >
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
@@ -371,7 +370,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
             <button
               type="submit"
               disabled={isSubmittingNews}
-              className="rounded bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="btn-premium"
             >
               {isSubmittingNews ? "Publicando..." : "Publicar noticia"}
             </button>
@@ -387,9 +386,9 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                 {newsPosts.map((post) => (
                   <article
                     key={post.id}
-                    className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-900 p-3"
+                    className="space-y-3 border border-white/10 bg-neutral-900/20 p-3"
                   >
-                    <div className="aspect-[16/10] overflow-hidden rounded-md bg-neutral-800">
+                    <div className="aspect-[16/10] overflow-hidden bg-neutral-800/60">
                       <img
                         src={post.cover_image_url || DEFAULT_NEWS_COVER_IMAGE}
                         alt={post.title}
@@ -398,11 +397,11 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                       />
                     </div>
 
-                    <p className="text-xs uppercase tracking-[0.12em] text-blue-300">
+                    <p className="text-xs uppercase tracking-[0.12em] text-neutral-300">
                       {formatNewsDate(post.publish_date)}
                     </p>
 
-                    <p className="w-fit rounded-full border border-blue-700/70 bg-blue-600/10 px-2 py-1 text-xs uppercase tracking-[0.12em] text-blue-200">
+                    <p className="w-fit border border-white/20 bg-neutral-900/60 px-2 py-1 text-xs uppercase tracking-[0.12em] text-neutral-200">
                       {formatNewsCategoryLabel(post.category)}
                     </p>
 
@@ -413,7 +412,7 @@ export function AdminManagerClient({ photos, newsPosts }: AdminManagerClientProp
                       type="button"
                       onClick={() => handleDeleteNews(post.id, post.slug)}
                       disabled={deletingNewsId === post.id}
-                      className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="btn-premium btn-premium-danger"
                     >
                       {deletingNewsId === post.id ? "Borrando..." : "Borrar noticia"}
                     </button>

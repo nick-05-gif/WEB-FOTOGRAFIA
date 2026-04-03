@@ -9,13 +9,13 @@ export default async function NoticiasPage() {
   const posts = await getNewsPosts();
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-10 px-6 py-16 sm:py-20">
-      <section className="space-y-4 text-center">
-        <p className="text-sm uppercase tracking-[0.2em] text-blue-300">Blog visual</p>
-        <h1 className="text-4xl font-semibold tracking-tight text-neutral-100 sm:text-5xl">
+    <main className="mx-auto w-full max-w-7xl space-y-16 px-8 py-20 sm:py-24">
+      <section className="space-y-6 text-center">
+        <p className="text-sm uppercase tracking-[0.24em] text-neutral-400">Revista visual</p>
+        <h1 className="text-5xl font-semibold tracking-tight text-neutral-100 sm:text-6xl">
           Noticias
         </h1>
-        <p className="mx-auto max-w-3xl text-neutral-300">
+        <p className="mx-auto max-w-3xl text-neutral-300/90">
           Ideas, tecnicas y sesiones reales para entender mejor cada proyecto fotografico.
         </p>
       </section>

@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+:root {
+	--color-bg: #0f0f10;
+	--color-surface: #161617;
+	--color-surface-soft: #1d1d1f;
+	--color-text: #f2f2f2;
+	--color-muted: #b8b8be;
+	--color-line: rgba(255, 255, 255, 0.14);
+	--space-page-y: clamp(4.5rem, 8vw, 7rem);
+	--space-block-lg: clamp(2rem, 4vw, 3.4rem);
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-sans), "Inter", "Segoe UI", sans-serif;
+	line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--font-serif), "Playfair Display", "Times New Roman", serif;
+	letter-spacing: 0.01em;
+	line-height: 1.15;
+	text-wrap: balance;
+}
+
+p,
+li,
+small,
+label,
+input,
+textarea,
+select,
+button,
+a {
+	font-family: var(--font-sans), "Inter", "Segoe UI", sans-serif;
+}
+
+::selection {
+	background: rgba(255, 255, 255, 0.2);
+	color: #ffffff;
+}
+
+.btn-premium {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0;
+	border: 1px solid var(--color-line);
+	background: #111112;
+	color: #f8f8f8;
+	padding: 0.7rem 1.15rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	transition:
+		background-color 180ms ease,
+		border-color 180ms ease,
+		color 180ms ease;
+}
+
+.btn-premium:hover {
+	background: #1a1a1c;
+	border-color: rgba(255, 255, 255, 0.26);
+}
+
+.btn-premium:disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
+}
+
+.btn-premium-danger {
+	background: #1f1212;
+	border-color: rgba(255, 150, 150, 0.34);
+	color: #ffeaea;
+}
+
+.btn-premium-danger:hover {
+	background: #291515;
+	border-color: rgba(255, 150, 150, 0.5);
+}

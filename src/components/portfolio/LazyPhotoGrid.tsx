@@ -65,14 +65,14 @@ function LazyPhotoCard({ item, index }: { item: LazyPhotoItem; index: number }) 
         transitionDelay: isMobile ? `${(index % 2) * 70}ms` : `${(index % 3) * 110}ms`,
       }}
     >
-      <div className="group relative aspect-square overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900">
+      <div className="group relative aspect-square overflow-hidden border border-white/10 bg-neutral-900/20">
         <Image
           src={item.imageUrl}
           alt={item.title}
           fill
           loading="lazy"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
         />
       </div>
     </article>
@@ -81,7 +81,7 @@ function LazyPhotoCard({ item, index }: { item: LazyPhotoItem; index: number }) 
 
 export function LazyPhotoGrid({ items }: LazyPhotoGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
       {items.map((item, index) => (
         <LazyPhotoCard key={item.id} item={item} index={index} />
       ))}

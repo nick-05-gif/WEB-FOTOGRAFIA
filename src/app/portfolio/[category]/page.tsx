@@ -36,13 +36,13 @@ export default async function PortfolioCategoryPage({
   const galleryItems = [...dbItems, ...mockItems];
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
-      <section className="space-y-8">
-        <h1 className="text-4xl font-semibold tracking-tight text-neutral-100 sm:text-5xl">
+    <main className="mx-auto w-full max-w-7xl px-8 py-20 sm:py-24">
+      <section className="space-y-10">
+        <h1 className="text-5xl font-semibold tracking-tight text-neutral-100 sm:text-6xl">
           {formattedCategory}
         </h1>
 
-        <p className="max-w-3xl text-neutral-300">
+        <p className="max-w-3xl text-neutral-300/90">
           La galeria carga de forma progresiva para que el scroll se sienta fluido y puedas ver
           cada imagen con una transicion suave.
         </p>
