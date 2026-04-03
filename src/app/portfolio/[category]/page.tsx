@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { LazyPhotoGrid } from "@/components/portfolio/LazyPhotoGrid";
 import { getPhotosByCategory } from "@/lib/supabase/queries";
 import { getCategoryData } from "@/lib/portfolio-data";
+import { SITE_URL } from "@/lib/site";
 
 interface PortfolioCategoryPageProps {
   params: Promise<{ category: string }>;
@@ -9,6 +11,48 @@ interface PortfolioCategoryPageProps {
 function formatCategory(rawCategory: string) {
   const normalized = rawCategory.toLowerCase();
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+export async function generateMetadata({
+  params,
+}: PortfolioCategoryPageProps): Promise<Metadata> {
+  const { category } = await params;
+  const categorySlug = category.toLowerCase();
+  const categoryData = getCategoryData(categorySlug);
+  const formattedCategory = categoryData?.name ?? formatCategory(categorySlug);
+
+  const title = `Portfolio de ${formattedCategory} | Ruben Fotografia`;
+  const description = `Galeria de ${formattedCategory.toLowerCase()} con seleccion premium de imagenes de Ruben Fotografia.`;
+  const shareImage = categoryData?.carouselImages?.[0];
+  const pageUrl = `${SITE_URL}/portfolio/${categorySlug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      type: "website",
+      url: pageUrl,
+      title,
+      description,
+      images: shareImage
+        ? [
+            {
+              url: shareImage,
+              alt: `Portada de ${formattedCategory}`,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: shareImage ? [shareImage] : undefined,
+    },
+  };
 }
 
 export default async function PortfolioCategoryPage({

@@ -1,9 +1,52 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DEFAULT_NEWS_COVER_IMAGE } from "@/lib/news/constants";
 import { getNewsPostBySlug } from "@/lib/supabase/queries";
+import { SITE_URL } from "@/lib/site";
 
 interface NewsDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: NewsDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getNewsPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: "Noticia | Ruben Fotografia",
+      description: "Articulo del apartado de noticias de Ruben Fotografia.",
+    };
+  }
+
+  const articleUrl = `${SITE_URL}/noticias/${post.slug}`;
+  const shareImage = post.cover_image_url || DEFAULT_NEWS_COVER_IMAGE;
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: {
+      canonical: articleUrl,
+    },
+    openGraph: {
+      type: "article",
+      url: articleUrl,
+      title: post.title,
+      description: post.excerpt,
+      images: [
+        {
+          url: shareImage,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [shareImage],
+    },
+  };
 }
 
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
