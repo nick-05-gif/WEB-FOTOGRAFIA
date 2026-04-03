@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Refresca el token de sesión en cada request de navegación.
-// Debe usarse SOLO en src/middleware.ts — no en Server Components.
+// Debe usarse SOLO en src/proxy.ts — no en Server Components.
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
